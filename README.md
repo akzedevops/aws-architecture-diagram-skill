@@ -21,6 +21,10 @@ checker. You look at the picture only when the checker reports zero findings. Ey
 | `scripts/fetch_icons.py` | copies icons out of the `diagrams` package under short names (`eks`, `rds`, `alb`, `argo`, `gitlab`, ...) |
 | `scripts/build_diagram.py` | data file to PNG: HTML, Chrome headless at 2x, cropped |
 | `scripts/check_diagram.py` | the geometry audit, measuring labels with the real font |
+| `scripts/export_drawio.py` | the same diagram as a native `.drawio` with live AWS4 shapes |
+| `scripts/export_eraser.py` | Eraser diagram-as-code, ready for app.eraser.io or the Eraser MCP |
+| `scripts/export_figma.py` | two Figma Plugin API scripts for the Figma MCP's `use_figma` |
+| `scripts/export_mermaid.py` | a Mermaid `architecture-beta` block for READMEs |
 | `assets/template_diagram.py` | a two-zone starter that builds at zero findings |
 
 ## Install
@@ -50,6 +54,32 @@ python scripts/check_diagram.py diagram.py
 
 `check_diagram.py --calibrate` prints the label widths it measured, useful if your machine
 has different fonts. `fetch_icons.py --list kube` searches the whole icon tree.
+
+## Exports
+
+One data file, four more outputs, all regenerated rather than hand-edited:
+
+```
+python scripts/export_drawio.py diagram.py    # architecture.drawio, editable AWS4 shapes
+python scripts/export_eraser.py diagram.py    # architecture.eraser, paste into app.eraser.io
+python scripts/export_figma.py diagram.py     # _figma/figma_step1.js for the Figma MCP
+python scripts/export_mermaid.py diagram.py   # architecture.mmd for READMEs
+```
+
+The draw.io file keeps the PNG's groups, routes and labels, so it opens looking like the
+render. Eraser and Mermaid lay out on their own, so those copies keep the structure and
+the flows but not the lanes. The Figma export is two Plugin API scripts run through the
+Figma MCP's `use_figma` (step 1 creates zones, icon placeholders and captions and returns
+the frame id; step 2, generated with `--root <id>`, adds connectors and labels), followed
+by `upload_assets` for the icon PNGs.
+
+## How it compares
+
+AWS's own `awsdac` and Eraser lay out for you from YAML or a DSL; the `diagrams` package
+and Graphviz do the same from Python. They are faster for a first sketch and weaker on
+the last mile: crossings, lanes, label placement and print quality. draw.io skills give
+editable files but no audit. This skill takes the opposite bet: you control every
+position, and the checker proves the result is clean before you look at it.
 
 ## Data file
 

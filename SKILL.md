@@ -63,8 +63,22 @@ out anything: it holds the palette, the spacing rules and the lessons that cost 
    diagram will be printed. A4 portrait at full width makes 11.5 px text about 3.5 pt, so
    prefer landscape or a half-page crop if the image must be small.
 
-9. **Embed.** The PNG is the only artefact that ships. If a draw.io, Figma or Eraser copy is
-   wanted, generate it from the same data; never hand-edit a copy, it drifts immediately.
+9. **Embed the PNG; export copies from the same data.** The PNG is what ships. When an
+   editable or shared copy is wanted, run an exporter on the same data file rather than
+   redrawing, and regenerate after every change; a hand-edited copy drifts immediately.
+   - `export_drawio.py diagram.py` writes a native `.drawio` with live AWS4 shapes, the
+     same groups, routes and labels. Opens at app.diagrams.net or in the VS Code Draw.io
+     extension. Non-AWS icons (GitLab, Argo, people) become plain boxes.
+   - `export_eraser.py diagram.py` writes Eraser diagram-as-code (`.eraser`). With the
+     Eraser MCP connected: `create_file`, then `manually_create_diagram` with diagramType
+     `cloud-architecture-diagram` and the text as `code`, then `export_diagram` for a PNG.
+     Eraser lays out on its own, so expect a tall top-down picture, not the PNG's lanes.
+   - `export_figma.py diagram.py` writes `_figma/figma_step1.js`. Load the `figma-use`
+     skill, run the script through `use_figma`, take `rootId` from the result, rerun with
+     `--root <id>` to get `figma_step2.js`, run that too, then `upload_assets` the icon
+     PNGs onto the placeholder nodes in `icon_order.txt` order. Two calls minimum.
+   - `export_mermaid.py diagram.py` writes an `architecture-beta` block for READMEs and
+     wikis: stock icons only, no edge labels, Mermaid's own layout.
 
 ## What the build does
 
